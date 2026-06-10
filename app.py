@@ -1,4 +1,5 @@
 import streamlit as st
+from src.analyzers.gemini_analyzer import analyze_readme_with_gemini
 from src.analyzers.repo_analyzer import analyze_readme
 from src.utils.report_generator import display_report
 from src.utils.repository_fetcher import fetch_readme_from_url
@@ -29,7 +30,10 @@ if st.button("Analyze Repository"):
                 st.error("Provide either a repository URL or README content.")
                 st.stop()
 
-            analysis_data = analyze_readme(readme_content)
+            try:
+                analysis_data = analyze_readme_with_gemini(readme_content)
+            except Exception:
+                analysis_data = analyze_readme(readme_content)
 
         st.success("Analysis Complete!")
 
