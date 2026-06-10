@@ -1,11 +1,17 @@
 import streamlit as st
 from src.analyzers.repo_analyzer import analyze_readme
 from src.utils.report_generator import display_report
+from src.utils.repository_fetcher import fetch_readme_from_url
 
 st.set_page_config(page_title="RepoLens", page_icon="🔍")
 
 st.title("🔍 RepoLens")
 st.subheader("Open Source Repository Onboarding Assistant")
+
+repo_url = st.text_input(
+    "Repository URL (Optional)",
+    placeholder="https://github.com/owner/repo",
+)
 
 readme_content = st.text_area(
     "Paste Repository README Content Here",
@@ -14,14 +20,20 @@ readme_content = st.text_area(
 )
 
 if st.button("Analyze Repository"):
-    if not readme_content.strip():
-        st.error("Please provide README content to analyze.")
-    else:
-        with st.spinner("Analyzing..."):
-            # 1. Call the analyzer
+    try:
+        with st.spinner("Fetching and analyzing..."):
+            if repo_url.strip():
+                readme_content = fetch_readme_from_url(repo_url)
+
+            if not readme_content.strip():
+                st.error("Provide either a repository URL or README content.")
+                st.stop()
+
             analysis_data = analyze_readme(readme_content)
 
         st.success("Analysis Complete!")
 
-        # 2. Call the report generator to display the results
         display_report(analysis_data)
+
+    except Exception as e:
+        st.error(str(e))

@@ -97,13 +97,13 @@ def analyze_readme(readme_content: str) -> Dict[str, str | List[str]]:
         readme_content, "Key Components"
     ) or _parse_section(readme_content, "Features")
 
-    roadmap_section = _parse_section(
-        readme_content, "Roadmap"
-    ) or _parse_section(readme_content, "Getting Started")
+    roadmap_section = _parse_section(readme_content, "Roadmap") or _parse_section(
+        readme_content, "Getting Started"
+    )
 
-    tasks_section = _parse_section(
-        readme_content, "Contributing"
-    ) or _parse_section(readme_content, "Beginner-Friendly Tasks")
+    tasks_section = _parse_section(readme_content, "Contributing") or _parse_section(
+        readme_content, "Beginner-Friendly Tasks"
+    )
 
     analysis = {
         "title": title or "No Title Found",
