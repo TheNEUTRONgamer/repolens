@@ -139,7 +139,7 @@ RepoLens generates:
 
 ## Contributors
 
-### @TheNEUTRONgamer
+### @TheNEUTRONgamer (indravandith)
 
 * Project architecture
 * Streamlit frontend

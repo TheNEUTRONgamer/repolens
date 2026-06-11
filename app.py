@@ -9,6 +9,11 @@ st.set_page_config(page_title="RepoLens", page_icon="🔍")
 st.title("🔍 RepoLens")
 st.subheader("Open Source Repository Onboarding Assistant")
 
+ai_provider = st.selectbox(
+    "AI Provider",
+    ["Gemini API", "Ollama (Local)"],
+)
+
 repo_url = st.text_input(
     "Repository URL (Optional)",
     placeholder="https://github.com/owner/repo",
@@ -30,16 +35,23 @@ if st.button("Analyze Repository"):
                 st.error("Provide either a repository URL or README content.")
                 st.stop()
 
-            try:
-                analysis_data = analyze_readme_with_gemini(readme_content)
-                st.success("Gemini AI analysis used")
-            except Exception as e:
-                st.error(f"Gemini failed: {e}")
-                analysis_data = analyze_readme(readme_content)
-                st.warning("Using fallback rule-based analyzer")
+            if ai_provider == "Gemini API":
+                try:
+                    analysis_data = analyze_readme_with_gemini(readme_content)
+                    st.success("Gemini AI analysis used")
 
-                st.success("Analysis Complete!")
+                except Exception as e:
+                    st.error(f"Gemini failed: {e}")
+                    analysis_data = analyze_readme(readme_content)
+                    st.warning("Using fallback rule-based analyzer")
 
+            else:
+                st.warning(
+                    "Ollama integration is being configured. For now, use Gemini API."
+                )
+                st.stop()
+
+        st.success("Analysis Complete!")
         display_report(analysis_data)
 
     except Exception as e:
