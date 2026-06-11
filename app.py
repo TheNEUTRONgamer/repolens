@@ -32,10 +32,13 @@ if st.button("Analyze Repository"):
 
             try:
                 analysis_data = analyze_readme_with_gemini(readme_content)
-            except Exception:
+                st.success("Gemini AI analysis used")
+            except Exception as e:
+                st.error(f"Gemini failed: {e}")
                 analysis_data = analyze_readme(readme_content)
+                st.warning("Using fallback rule-based analyzer")
 
-        st.success("Analysis Complete!")
+                st.success("Analysis Complete!")
 
         display_report(analysis_data)
 
