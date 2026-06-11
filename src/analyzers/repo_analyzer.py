@@ -105,7 +105,7 @@ def analyze_readme(readme_content: str) -> Dict[str, str | List[str]]:
         readme_content, "Beginner-Friendly Tasks"
     )
 
-    analysis = {
+    analysis: Dict[str, str | List[str]] = {
         "title": title or "No Title Found",
         "summary": summary_section or title or "Summary not found.",
         "architecture": architecture_section

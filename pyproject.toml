@@ -1,13 +1,19 @@
 [project]
 name = "repolens"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI-powered open source repository onboarding assistant using Gemini and Streamlit"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "google-generativeai>=0.8.6",
+    "mypy>=2.1.0",
     "pre-commit>=4.6.0",
     "python-dotenv>=1.2.2",
     "ruff>=0.15.16",
     "streamlit>=1.58.0",
+]
+
+[dependency-groups]
+dev = [
+    "types-requests>=2.33.0.20260518",
 ]
