@@ -6,11 +6,68 @@ from src.utils.repository_fetcher import fetch_readme_from_url
 
 st.set_page_config(page_title="RepoLens", page_icon="🔍")
 
-st.title("🔍 RepoLens")
-st.subheader("Open Source Repository Onboarding Assistant")
+language = st.selectbox(
+    "Language / భాష",
+    ["English", "తెలుగు"],
+)
+
+if language == "తెలుగు":
+    APP_TITLE = "🔍 రెపోలెన్స్"
+    APP_SUBTITLE = "ఓపెన్ సోర్స్ రిపోజిటరీ ఆన్‌బోర్డింగ్ అసిస్టెంట్"
+
+    PROVIDER_LABEL = "AI ప్రొవైడర్"
+    API_KEY_LABEL = "Gemini API కీ (BYOK)"
+    API_KEY_HELP = "మీ Gemini API కీని నమోదు చేయండి"
+
+    REPO_LABEL = "రిపోజిటరీ URL (ఐచ్చికం)"
+    REPO_PLACEHOLDER = "https://github.com/owner/repo"
+
+    README_LABEL = "README కంటెంట్‌ను ఇక్కడ పేస్ట్ చేయండి"
+    README_PLACEHOLDER = "విశ్లేషణ కోసం రిపోజిటరీ README.md కంటెంట్‌ను ఇక్కడ పేస్ట్ చేయండి."
+
+    ANALYZE_BUTTON = "రిపోజిటరీని విశ్లేషించు"
+
+    EMPTY_ERROR = "రిపోజిటరీ URL లేదా README కంటెంట్‌లో ఏదో ఒకటి ఇవ్వండి."
+
+    FETCHING_TEXT = "డేటాను తెచ్చి విశ్లేషిస్తోంది..."
+    GEMINI_SUCCESS = "Gemini AI విశ్లేషణ ఉపయోగించబడింది"
+    COMPLETE_SUCCESS = "విశ్లేషణ పూర్తయింది!"
+
+    FALLBACK_WARNING = "రూల్-బేస్డ్ విశ్లేషకాన్ని ఉపయోగిస్తోంది"
+
+    OLLAMA_WARNING = "Ollama ఇంటిగ్రేషన్ ఇంకా అభివృద్ధిలో ఉంది. ప్రస్తుతం Gemini API ఉపయోగించండి."
+
+else:
+    APP_TITLE = "🔍 RepoLens"
+    APP_SUBTITLE = "Open Source Repository Onboarding Assistant"
+
+    PROVIDER_LABEL = "AI Provider"
+    API_KEY_LABEL = "Gemini API Key (BYOK)"
+    API_KEY_HELP = "Enter your own Gemini API key"
+
+    REPO_LABEL = "Repository URL (Optional)"
+    REPO_PLACEHOLDER = "https://github.com/owner/repo"
+
+    README_LABEL = "Paste Repository README Content Here"
+    README_PLACEHOLDER = "Paste the full content of a repository's README.md file here to get an analysis."
+
+    ANALYZE_BUTTON = "Analyze Repository"
+
+    EMPTY_ERROR = "Provide either a repository URL or README content."
+
+    FETCHING_TEXT = "Fetching and analyzing..."
+    GEMINI_SUCCESS = "Gemini AI analysis used"
+    COMPLETE_SUCCESS = "Analysis Complete!"
+
+    FALLBACK_WARNING = "Using fallback rule-based analyzer"
+
+    OLLAMA_WARNING = "Ollama integration is being configured. For now, use Gemini API."
+
+st.title(APP_TITLE)
+st.subheader(APP_SUBTITLE)
 
 ai_provider = st.selectbox(
-    "AI Provider",
+    PROVIDER_LABEL,
     ["Ollama (Local)", "Gemini API (BYOK)"],
 )
 
@@ -18,35 +75,30 @@ api_key = None
 
 if ai_provider == "Gemini API (BYOK)":
     api_key = st.text_input(
-        "Gemini API Key (BYOK)",
+        API_KEY_LABEL,
         type="password",
-        help="Enter your own Gemini API key",
+        help=API_KEY_HELP,
     )
 
-language = st.selectbox(
-    "Language / భాష",
-    ["English", "తెలుగు"],
-)
-
 repo_url = st.text_input(
-    "Repository URL (Optional)",
-    placeholder="https://github.com/owner/repo",
+    REPO_LABEL,
+    placeholder=REPO_PLACEHOLDER,
 )
 
 readme_content = st.text_area(
-    "Paste Repository README Content Here",
+    README_LABEL,
     height=300,
-    placeholder="Paste the full content of a repository's README.md file here to get an analysis.",
+    placeholder=README_PLACEHOLDER,
 )
 
-if st.button("Analyze Repository"):
+if st.button(ANALYZE_BUTTON):
     try:
-        with st.spinner("Fetching and analyzing..."):
+        with st.spinner(FETCHING_TEXT):
             if repo_url.strip():
                 readme_content = fetch_readme_from_url(repo_url)
 
             if not readme_content.strip():
-                st.error("Provide either a repository URL or README content.")
+                st.error(EMPTY_ERROR)
                 st.stop()
 
             if ai_provider == "Gemini API (BYOK)":
@@ -56,20 +108,18 @@ if st.button("Analyze Repository"):
                         api_key,
                         language,
                     )
-                    st.success("Gemini AI analysis used")
+                    st.success(GEMINI_SUCCESS)
 
                 except Exception as e:
                     st.error(f"Gemini failed: {e}")
                     analysis_data = analyze_readme(readme_content)
-                    st.warning("Using fallback rule-based analyzer")
+                    st.warning(FALLBACK_WARNING)
 
             else:
-                st.warning(
-                    "Ollama integration is being configured. For now, use Gemini API."
-                )
+                st.warning(OLLAMA_WARNING)
                 st.stop()
 
-        st.success("Analysis Complete!")
+        st.success(COMPLETE_SUCCESS)
         display_report(analysis_data)
 
     except Exception as e:
