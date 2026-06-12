@@ -3,6 +3,7 @@ from src.analyzers.gemini_analyzer import analyze_readme_with_gemini
 from src.analyzers.repo_analyzer import analyze_readme
 from src.utils.report_generator import display_report
 from src.utils.repository_fetcher import fetch_readme_from_url
+from src.analyzers.ollama_analyzer import analyze_readme_with_ollama
 
 st.set_page_config(page_title="RepoLens", page_icon="🔍")
 
@@ -80,6 +81,14 @@ if ai_provider == "Gemini API (BYOK)":
         help=API_KEY_HELP,
     )
 
+if ai_provider == "Ollama (Local)":
+    ollama_url = st.text_input("Ollama URL", value="http://localhost:11434")
+
+    ollama_model = st.text_input(
+        "Ollama Model",
+        value="mistral:latest",
+    )
+
 repo_url = st.text_input(
     REPO_LABEL,
     placeholder=REPO_PLACEHOLDER,
@@ -116,9 +125,14 @@ if st.button(ANALYZE_BUTTON):
                     st.warning(FALLBACK_WARNING)
 
             else:
-                st.warning(OLLAMA_WARNING)
-                st.stop()
+                analysis_data = analyze_readme_with_ollama(
+                    readme_content,
+                    ollama_url,
+                    ollama_model,
+                    language,
+                )
 
+        st.success(f"Ollama analysis used ({ollama_model})")
         st.success(COMPLETE_SUCCESS)
         display_report(analysis_data)
 

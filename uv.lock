@@ -1584,6 +1584,7 @@ dependencies = [
     { name = "mypy" },
     { name = "pre-commit" },
     { name = "python-dotenv" },
+    { name = "requests" },
     { name = "ruff" },
     { name = "streamlit" },
 ]
@@ -1599,6 +1600,7 @@ requires-dist = [
     { name = "mypy", specifier = ">=2.1.0" },
     { name = "pre-commit", specifier = ">=4.6.0" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
+    { name = "requests", specifier = ">=2.34.2" },
     { name = "ruff", specifier = ">=0.15.16" },
     { name = "streamlit", specifier = ">=1.58.0" },
 ]
