@@ -6,18 +6,37 @@ import google.generativeai as genai
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-model = genai.GenerativeModel("gemini-2.5-flash")
+DEFAULT_API_KEY = os.getenv("GEMINI_API_KEY")
 
 
-def analyze_readme_with_gemini(readme_content: str) -> dict:
+def analyze_readme_with_gemini(
+    readme_content: str,
+    api_key: str | None = None,
+    language: str = "English",
+) -> dict:
+    key = api_key or DEFAULT_API_KEY
+
+    if not key:
+        raise ValueError("No Gemini API key provided")
+
+    genai.configure(api_key=key)
+
+    model = genai.GenerativeModel("gemini-2.5-flash")
+
     prompt = f"""
 You are a senior open-source maintainer and developer advocate.
 
 Your job is to help a new contributor understand and contribute to a repository.
 
 Return ONLY valid JSON.
+
+Language: {language}
+
+If language is Telugu:
+- Write summary in Telugu.
+- Write architecture in Telugu.
+- Write roadmap in Telugu.
+- Write tasks in Telugu.
 
 Schema:
 
@@ -79,14 +98,6 @@ components:
 
 roadmap:
 - Create a realistic onboarding roadmap.
-- Example:
-  Read README
-  Setup development environment
-  Run project locally
-  Run tests
-  Explore codebase
-  Fix first issue
-  Submit pull request
 
 tasks:
 - Suggest realistic beginner-friendly contribution tasks.

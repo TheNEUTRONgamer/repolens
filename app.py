@@ -11,7 +11,21 @@ st.subheader("Open Source Repository Onboarding Assistant")
 
 ai_provider = st.selectbox(
     "AI Provider",
-    ["Gemini API", "Ollama (Local)"],
+    ["Ollama (Local)", "Gemini API (BYOK)"],
+)
+
+api_key = None
+
+if ai_provider == "Gemini API (BYOK)":
+    api_key = st.text_input(
+        "Gemini API Key (BYOK)",
+        type="password",
+        help="Enter your own Gemini API key",
+    )
+
+language = st.selectbox(
+    "Language / భాష",
+    ["English", "తెలుగు"],
 )
 
 repo_url = st.text_input(
@@ -35,9 +49,13 @@ if st.button("Analyze Repository"):
                 st.error("Provide either a repository URL or README content.")
                 st.stop()
 
-            if ai_provider == "Gemini API":
+            if ai_provider == "Gemini API (BYOK)":
                 try:
-                    analysis_data = analyze_readme_with_gemini(readme_content)
+                    analysis_data = analyze_readme_with_gemini(
+                        readme_content,
+                        api_key,
+                        language,
+                    )
                     st.success("Gemini AI analysis used")
 
                 except Exception as e:
