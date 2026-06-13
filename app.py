@@ -84,20 +84,13 @@ if ai_provider == "Gemini API (BYOK)":
 if ai_provider == "Ollama (Local)":
     ollama_url = st.text_input("Ollama URL", value="http://localhost:11434")
 
-    ollama_model = st.text_input(
-        "Ollama Model",
-        value="mistral:latest",
-    )
+    ollama_model = st.text_input("Ollama Model", value="mistral:latest")
+
+    st.success(f"🖥️ Local AI: {ollama_model}")
 
 repo_url = st.text_input(
     REPO_LABEL,
     placeholder=REPO_PLACEHOLDER,
-)
-
-readme_content = st.text_area(
-    README_LABEL,
-    height=300,
-    placeholder=README_PLACEHOLDER,
 )
 
 if st.button(ANALYZE_BUTTON):

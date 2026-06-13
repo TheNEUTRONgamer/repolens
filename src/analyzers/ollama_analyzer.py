@@ -84,7 +84,7 @@ README:
             "prompt": prompt,
             "stream": False,
         },
-        timeout=120,
+        timeout=300,
     )
 
     response.raise_for_status()
