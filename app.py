@@ -1,3 +1,5 @@
+"""RepoLens Streamlit application."""
+
 import streamlit as st
 from src.analyzers.gemini_analyzer import analyze_readme_with_gemini
 from src.analyzers.repo_analyzer import analyze_readme
@@ -23,20 +25,15 @@ if language == "తెలుగు":
     REPO_LABEL = "రిపోజిటరీ URL (ఐచ్చికం)"
     REPO_PLACEHOLDER = "https://github.com/owner/repo"
 
-    README_LABEL = "README కంటెంట్‌ను ఇక్కడ పేస్ట్ చేయండి"
-    README_PLACEHOLDER = "విశ్లేషణ కోసం రిపోజిటరీ README.md కంటెంట్‌ను ఇక్కడ పేస్ట్ చేయండి."
-
     ANALYZE_BUTTON = "రిపోజిటరీని విశ్లేషించు"
 
-    EMPTY_ERROR = "రిపోజిటరీ URL లేదా README కంటెంట్‌లో ఏదో ఒకటి ఇవ్వండి."
+    EMPTY_ERROR = "రిపోజిటరీ URL ఇవ్వండి."
 
     FETCHING_TEXT = "డేటాను తెచ్చి విశ్లేషిస్తోంది..."
     GEMINI_SUCCESS = "Gemini AI విశ్లేషణ ఉపయోగించబడింది"
     COMPLETE_SUCCESS = "విశ్లేషణ పూర్తయింది!"
 
     FALLBACK_WARNING = "రూల్-బేస్డ్ విశ్లేషకాన్ని ఉపయోగిస్తోంది"
-
-    OLLAMA_WARNING = "Ollama ఇంటిగ్రేషన్ ఇంకా అభివృద్ధిలో ఉంది. ప్రస్తుతం Gemini API ఉపయోగించండి."
 
 else:
     APP_TITLE = "🔍 RepoLens"
@@ -49,20 +46,15 @@ else:
     REPO_LABEL = "Repository URL (Optional)"
     REPO_PLACEHOLDER = "https://github.com/owner/repo"
 
-    README_LABEL = "Paste Repository README Content Here"
-    README_PLACEHOLDER = "Paste the full content of a repository's README.md file here to get an analysis."
-
     ANALYZE_BUTTON = "Analyze Repository"
 
-    EMPTY_ERROR = "Provide either a repository URL or README content."
+    EMPTY_ERROR = "Provide either a repository URL."
 
     FETCHING_TEXT = "Fetching and analyzing..."
     GEMINI_SUCCESS = "Gemini AI analysis used"
     COMPLETE_SUCCESS = "Analysis Complete!"
 
     FALLBACK_WARNING = "Using fallback rule-based analyzer"
-
-    OLLAMA_WARNING = "Ollama integration is being configured. For now, use Gemini API."
 
 st.title(APP_TITLE)
 st.subheader(APP_SUBTITLE)
@@ -73,6 +65,9 @@ ai_provider = st.selectbox(
 )
 
 api_key = None
+readme_content = ""
+ollama_url = ""
+ollama_model = ""
 
 if ai_provider == "Gemini API (BYOK)":
     api_key = st.text_input(
@@ -82,11 +77,15 @@ if ai_provider == "Gemini API (BYOK)":
     )
 
 if ai_provider == "Ollama (Local)":
-    ollama_url = st.text_input("Ollama URL", value="http://localhost:11434")
+    ollama_url = st.text_input(
+        "Ollama URL",
+        value="http://localhost:11434",
+    )
 
-    ollama_model = st.text_input("Ollama Model", value="mistral:latest")
-
-    st.success(f"🖥️ Local AI: {ollama_model}")
+    ollama_model = st.text_input(
+        "Ollama Model",
+        value="mistral:latest",
+    )
 
 repo_url = st.text_input(
     REPO_LABEL,
@@ -98,8 +97,7 @@ if st.button(ANALYZE_BUTTON):
         with st.spinner(FETCHING_TEXT):
             if repo_url.strip():
                 readme_content = fetch_readme_from_url(repo_url)
-
-            if not readme_content.strip():
+            else:
                 st.error(EMPTY_ERROR)
                 st.stop()
 
@@ -112,8 +110,8 @@ if st.button(ANALYZE_BUTTON):
                     )
                     st.success(GEMINI_SUCCESS)
 
-                except Exception as e:
-                    st.error(f"Gemini failed: {e}")
+                except Exception as exc:  # pylint: disable=broad-exception-caught
+                    st.error(f"Gemini failed: {exc}")
                     analysis_data = analyze_readme(readme_content)
                     st.warning(FALLBACK_WARNING)
 
@@ -124,10 +122,10 @@ if st.button(ANALYZE_BUTTON):
                     ollama_model,
                     language,
                 )
+                st.success(f"Ollama analysis used ({ollama_model})")
 
-        st.success(f"Ollama analysis used ({ollama_model})")
         st.success(COMPLETE_SUCCESS)
         display_report(analysis_data)
 
-    except Exception as e:
-        st.error(str(e))
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        st.error(str(exc))
