@@ -34,8 +34,8 @@ mypy:
 test:
   stage: test
   script:
-    - uv run pytest
-
+  - export PYTHONPATH=$CI_PROJECT_DIR
+  - uv run pytest
 coverage:
   stage: coverage
   script:

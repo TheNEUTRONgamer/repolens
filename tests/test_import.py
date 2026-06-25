@@ -1,4 +1,4 @@
 def test_import():
-    import app
+    from src.analyzers.repo_analyzer import analyze_readme
 
-    assert app is not None
+    assert callable(analyze_readme)
