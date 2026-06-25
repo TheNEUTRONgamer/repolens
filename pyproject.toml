@@ -16,5 +16,8 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "bandit>=1.9.4",
+    "pip-audit>=2.10.1",
     "types-requests>=2.33.0.20260518",
+    "vulture>=2.16",
 ]

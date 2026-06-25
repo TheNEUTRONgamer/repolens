@@ -1,0 +1,25 @@
+stages:
+  - lint
+  - typecheck
+
+variables:
+  UV_SYSTEM_PYTHON: "1"
+
+before_script:
+  - python --version
+  - pip install uv
+  - uv sync
+
+ruff:
+  stage: lint
+  image: python:3.12
+
+  script:
+    - uv run ruff check .
+
+mypy:
+  stage: typecheck
+  image: python:3.12
+
+  script:
+    - uv run mypy src
