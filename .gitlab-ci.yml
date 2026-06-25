@@ -23,3 +23,7 @@ mypy:
 
   script:
     - uv run mypy src
+coverage:
+  stage: test
+  script:
+    - uv run pytest --cov=src
