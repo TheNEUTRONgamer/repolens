@@ -15,6 +15,7 @@ before_script:
   - python --version
   - pip install uv
   - uv sync
+  - export PYTHONPATH="$CI_PROJECT_DIR"
 
 ruff:
   stage: lint
@@ -34,9 +35,14 @@ mypy:
 test:
   stage: test
   script:
-  - export PYTHONPATH=$CI_PROJECT_DIR
-  - uv run pytest
+    - uv run pytest
+
 coverage:
   stage: coverage
   script:
+    - pwd
+    - ls -la
+    - find . -maxdepth 2 -type f | sort
+    - uv run python -c "import os, sys; print(os.getcwd()); print(sys.path)"
+    - uv run python -c "import src; print(src.__file__)"
     - uv run pytest --cov=src --cov-report=term
