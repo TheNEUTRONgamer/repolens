@@ -1,9 +1,15 @@
 stages:
   - lint
-  - typecheck
+  - format
+  - type_check
+  - test
+  - coverage
 
 variables:
   UV_SYSTEM_PYTHON: "1"
+
+default:
+  image: python:3.12
 
 before_script:
   - python --version
@@ -12,18 +18,25 @@ before_script:
 
 ruff:
   stage: lint
-  image: python:3.12
-
   script:
     - uv run ruff check .
 
-mypy:
-  stage: typecheck
-  image: python:3.12
+ruff-format:
+  stage: format
+  script:
+    - uv run ruff format --check .
 
+mypy:
+  stage: type_check
   script:
     - uv run mypy src
-coverage:
+
+test:
   stage: test
   script:
-    - uv run pytest --cov=src
+    - uv run pytest
+
+coverage:
+  stage: coverage
+  script:
+    - uv run pytest --cov=src --cov-report=term
